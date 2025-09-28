@@ -7,6 +7,36 @@ https://docs.python.org/3/library/io.html#io.IOBase.readline
 https://docs.python.org/3/library/functions.html#open
 """
 
+# helper function to find the black pixels in each square
+def square_finder(N, M, image):
+    """Determine how many fully black squares exist in an image.
+
+    Image is of size N (lines) x M (characters) where each pixel is either 
+    white (.) or black (X)
+    """
+    # variable to hold num of squares
+    total = 0
+
+    max_squares = min(N, M)
+    
+    # Try all square sizes from 1x1 up to min(n, m)
+    for k in range(1, max_squares + 1):
+        # Slide a N x M window over the grid
+        for i in range(N - k + 1):
+            for j in range(M - k + 1):
+                # Check if all cells in this N x M block are "X"
+                all_black = True
+                for r in range(i, i + k):
+                    for c in range(j, j + k):
+                        if image[r][c] != "X":
+                            all_black = False
+                            break
+                    if not all_black:
+                        break
+                if all_black:
+                    total += 1
+    return total
+
 
 def play_game():
     """Main function to run game."""
@@ -19,6 +49,13 @@ def play_game():
         integer T in the range [1,10], the num of test cases, and first line of
         each test contains 2 integers, N and M, the number of rows and columns,
         range [1,100]
+
+        Example Output:
+            # >>> Enter Filename: square.txt
+            # Image 1: 3
+            # Image 2: 5
+            # Image 3: 9
+            # Run Again (Y/N): n
         """
 
         # get filename from user
@@ -28,38 +65,19 @@ def play_game():
             # read first line to get number of test cases 
             num_cases = int(f.readline().strip())
 
-            test_cases = []
-
-            # get N and M (2 2)
-            num_lines_and_chars = [f.readline().strip()]
-            # get the image 
-            image = [f.readline().strip()]
-
-        print(image)
-        print(num_cases)
-        # return num_cases
+            for case in range(1, num_cases + 1):
+                # get N and M (2 2)
+                N, M = map(int, f.readline().strip().split())
+                # get the image 
+                image = [list(f.readline().strip()) for _ in range(N)]
+                # print output, for every "square" in the image 
+                result = square_finder(N, M, image)
+                print(f"Image {case}: {result}")
 
 
-    # helper function to find the pixels in each squares
-    def square_finder(contents):
-        """Determine how many fully black squares exist in an image.
-
-        Image is of size N (lines) x M (characters) where each pixel is either 
-        white (.) or black (X)
-
-        Example Output:
-            >>> Enter Filename: square.txt
-            Image 1: 3
-            Image 2: 5
-            Image 3: 9
-            Run Again (Y/N): n
-        """
-
-        # print output, for every "square" in the image 
-        # print(f"Image{}: {}")
-    
-    image = open_and_read_file()
-    square_finder(image)
+    # print(image)
+    # print(num_cases)
+    open_and_read_file()
 
 play_game()
 
